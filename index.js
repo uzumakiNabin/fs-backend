@@ -1,7 +1,9 @@
 const express = require("express");
 const morgan = require("morgan");
+const cors = require("cors");
 const app = express();
 
+app.use(cors());
 app.use(express.json());
 
 morgan.token("body", (req) => JSON.stringify(req.body));
@@ -32,7 +34,7 @@ let persons = [
   },
 ];
 
-const generateId = () => (Math.random() * 10000).toFixed();
+const generateId = () => Number((Math.random() * 10000).toFixed());
 
 app.get("/api/persons", (request, response) => {
   response.json(persons);
