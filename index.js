@@ -1,7 +1,13 @@
 const express = require("express");
+const morgan = require("morgan");
 const app = express();
 
 app.use(express.json());
+
+morgan.token("body", (req) => JSON.stringify(req.body));
+app.use(
+  morgan(":method :url :status :res[content-length] - :response-time ms :body")
+);
 
 let persons = [
   {
@@ -33,7 +39,9 @@ app.get("/api/persons", (request, response) => {
 });
 
 app.get("/info", (request, response) => {
-  response.send(`<p>Phonebook has info for ${persons.length} people</p><p>${new Date()}</p>`);
+  response.send(
+    `<p>Phonebook has info for ${persons.length} people</p><p>${new Date()}</p>`
+  );
 });
 
 app.get("/api/persons/:id", (request, response) => {
@@ -55,7 +63,6 @@ app.delete("/api/persons/:id", (request, response) => {
     response.status(404).end();
   }
 });
-
 app.post("/api/persons", (request, response) => {
   const body = request.body;
 
@@ -67,7 +74,11 @@ app.post("/api/persons", (request, response) => {
     response.status(400).json({ error: "number is required" });
     return;
   }
-  if (persons.findIndex((person) => person.name.toLowerCase() === body.name.toLowerCase()) > -1) {
+  if (
+    persons.findIndex(
+      (person) => person.name.toLowerCase() === body.name.toLowerCase()
+    ) > -1
+  ) {
     response.status(400).json({ error: "name must be unique" });
     return;
   }
