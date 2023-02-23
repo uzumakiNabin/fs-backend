@@ -1,3 +1,7 @@
+# Fullstackopen.com Node.js app
+
+Live demo of this application is hosted [here](https://phonebook-9fmn.onrender.com/).
+
 This project is initialized with `npm init`.
 
 ## Available Scripts
@@ -33,4 +37,4 @@ Deletes a single person of given id if available.
 
 Adds a person data in format {name: "", number: ""} passed as a request body.
 
-This project uses Express.js to create server application. You can learn more about express js at [here](https://expressjs.com/en/4x/api.html).
+This project uses Express.js to create server application. You can learn more about express js [here](https://expressjs.com/en/4x/api.html).
