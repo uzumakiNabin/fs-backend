@@ -24,6 +24,9 @@ const errorHandler = (error, request, response, next) => {
   if (error.name === "CastError") {
     return response.status(400).send({ error: "invalid id format" });
   }
+  if (error.name === "ValidationError") {
+    return response.status(400).send({ error: error.message });
+  }
   next(error);
 };
 
@@ -53,25 +56,21 @@ app.delete("/api/persons/:id", (request, response, next) => {
     .catch((err) => next(err));
 });
 
-app.post("/api/persons", (request, response) => {
+app.post("/api/persons", (request, response, next) => {
   const body = request.body;
-
-  if (!body.name || body.name === "" || body.name === null) {
-    return response.status(400).json({ error: "name is required" });
-  }
-  if (!body.number || body.number === "" || body.number === null) {
-    return response.status(400).json({ error: "number is required" });
-  }
   Person.findOne({ name: body.name })
     .then((existingPerson) => {
       if (existingPerson) {
         response.status(400).json({ error: "name must be unique" });
       } else {
         const person = new Person({ name: body.name, number: body.number });
-        person.save().then((savedPerson) => response.json(savedPerson));
+        person
+          .save()
+          .then((savedPerson) => response.json(savedPerson))
+          .catch((err) => next(err));
       }
     })
-    .catch((err) => response.status(500).end());
+    .catch((err) => next(err));
 });
 
 app.put("/api/persons/:id", (request, response, next) => {
@@ -86,7 +85,11 @@ app.put("/api/persons/:id", (request, response, next) => {
   }
 
   const person = { name: body.name, number: body.number };
-  Person.findByIdAndUpdate(id, person, { new: true })
+  Person.findByIdAndUpdate(id, person, {
+    new: true,
+    runValidators: true,
+    context: "query",
+  })
     .then((updatedPerson) => {
       response.json(updatedPerson);
     })
