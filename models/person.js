@@ -1,7 +1,5 @@
 const mongoose = require("mongoose");
 
-const password = "user1234";
-
 const url = process.env.MONGO_URI;
 
 mongoose.set("strictQuery", false);
